@@ -65,3 +65,4 @@ https://jdbc.postgresql.org/download/
 https://www.oracle.com/pe/database/technologies/appdev/jdbc-downloads.html
 https://central.sonatype.com/artifact/org.mongodb/mongodb-jdbc/2.0.2/versions?smo=true
 https://www.confluent.io/hub/mongodb/kafka-connect-mongodb
+https://www.confluent.io/hub/confluentinc/kafka-connect-elasticsearch

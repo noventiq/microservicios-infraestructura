@@ -164,37 +164,25 @@ services:
   # oracle-db:
   #   hostname: oracle-db
   #   container_name: oracle-db
-  #   image: wnameless/oracle-xe-11g-r2:latest
+  #   # Docker Hub image (feel free to change the tag "latest" to any other available one)
+  #   image: gvenzl/oracle-xe:latest
+  #   # Provide passwords and other environment variables to container
   #   environment:
-  #     - ORACLE_ALLOW_REMOTE=true
+  #     ORACLE_PASSWORD: oracle
+  #     APP_USER: my_user
+  #     APP_USER_PASSWORD: my_password
+  #   # Forward Oracle port
   #   ports:
   #     - 1521:1521
   #     - 5500:5500
+  #   # Provide healthcheck script options for startup
+  #   # options: >-
+  #   #   --health-cmd healthcheck.sh
+  #   #   --health-interval 10s
+  #   #   --health-timeout 5s
+  #   #   --health-retries 10
   #   volumes:
-  #     - $PWD/database/oracle:/u01/app/oracle/oradata/XE
-  #     # Oracle service (label used to access the service container)
-  oracle-db:
-    hostname: oracle-db
-    container_name: oracle-db
-    # Docker Hub image (feel free to change the tag "latest" to any other available one)
-    image: gvenzl/oracle-xe:latest
-    # Provide passwords and other environment variables to container
-    environment:
-      ORACLE_PASSWORD: oracle
-      APP_USER: my_user
-      APP_USER_PASSWORD: my_password
-    # Forward Oracle port
-    ports:
-      - 1521:1521
-      - 5500:5500
-    # Provide healthcheck script options for startup
-    # options: >-
-    #   --health-cmd healthcheck.sh
-    #   --health-interval 10s
-    #   --health-timeout 5s
-    #   --health-retries 10
-    volumes:
-    - $PWD/database/oracle:/opt/oracle/oradata
+  #   - $PWD/database/oracle:/opt/oracle/oradata
 
   sqlserver:
     hostname: sqlserver2019
@@ -210,33 +198,33 @@ services:
     volumes:
       - $PWD/database/sqlserver:/var/opt/mssql/data
 
-  postgres:
-    hostname: postgres
-    container_name: postgres
-    image: postgres:11
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgresdb
-      PGDATA: /data/postgres
-    ports:
-      - "5432:5432"
-    command: [ "postgres", "-c", "wal_level=logical", "-c", "max_wal_senders=1" , "-c", "max_replication_slots=1" ]
-    restart: unless-stopped
-    volumes:
-      - $PWD/database/postgresql:/data/postgres
+  # postgres:
+  #   hostname: postgres
+  #   container_name: postgres
+  #   image: postgres:11
+  #   environment:
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: postgres
+  #     POSTGRES_DB: postgresdb
+  #     PGDATA: /data/postgres
+  #   ports:
+  #     - "5432:5432"
+  #   command: [ "postgres", "-c", "wal_level=logical", "-c", "max_wal_senders=1" , "-c", "max_replication_slots=1" ]
+  #   restart: unless-stopped
+  #   volumes:
+  #     - $PWD/database/postgresql:/data/postgres
 
-  mysql:
-    hostname: mysql
-    container_name: mysql
-    image: mysql:8.0
-    privileged: true
-    ports:
-      - 3306:3306
-    environment:
-      MYSQL_ROOT_PASSWORD: test
-    volumes:
-      - $PWD/database/mysql:/var/lib/mysql
+  # mysql:
+  #   hostname: mysql
+  #   container_name: mysql
+  #   image: mysql:8.0
+  #   privileged: true
+  #   ports:
+  #     - 3306:3306
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: test
+  #   volumes:
+  #     - $PWD/database/mysql:/var/lib/mysql
 
   mongodb:
     hostname: mongo-db
@@ -250,6 +238,39 @@ services:
     volumes:
       - $PWD/database/mongodb:/data/db
 
+  # Elasticsearch Docker Images: https://www.docker.elastic.co/
+  elasticsearch:
+    hostname: elasticsearch
+    container_name: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.4.0
+    environment:
+      - xpack.security.enabled=false
+      - discovery.type=single-node
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - $PWD/database/elasticsearch:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+      - 9300:9300
+
+  kibana:
+    hostname: kibana
+    container_name: kibana
+    image: docker.elastic.co/kibana/kibana:7.4.0
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - 5601:5601
+    depends_on:
+      - elasticsearch
   # redis:
   #   container_name: redis
   #   image: redis:7.0.5-alpine
