@@ -185,16 +185,16 @@ services:
   #   - $PWD/database/oracle:/opt/oracle/oradata
 
   sqlserver:
-    hostname: sqlserver2019
-    container_name: sqlserver2019
-    image: mcr.microsoft.com/mssql/server:2019-CU3-ubuntu-18.04
+    hostname: sqlserver2022
+    container_name: sqlserver2022
+    image: mcr.microsoft.com/mssql/server:2022-latest
     user: '0:0'
     ports:
       - 1433:1433
     environment:
       ACCEPT_EULA: Y
       SA_PASSWORD: PasswordO1.
-      MSSQL_PID: Express
+      MSSQL_PID: Developer
     volumes:
       - $PWD/database/sqlserver:/var/opt/mssql/data
 
