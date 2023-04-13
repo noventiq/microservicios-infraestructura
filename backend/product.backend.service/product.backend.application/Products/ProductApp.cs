@@ -58,6 +58,9 @@ namespace product.backend.application.Products
 
         public async Task<StatusResponse<Product>> Create(CreateProductCommand command)
         {
+            //Sanear los datos
+            //Implementar reglas de negocio
+
             return await this.complexProcess(()=> _mediator.Send(command), "");
         }
     }

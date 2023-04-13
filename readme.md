@@ -24,6 +24,10 @@
     C:\jvms\store\17.0.1\bin\java.exe -jar E:\projects\ANA\Cursos\Microservicios\code\infraestructura\ui\kafka-ui-api-v0.6.1.jar --spring.config.additional-location=E:\projects\ANA\Cursos\Microservicios\code\infraestructura\ui\application-local.yml
     ```
 
+    Luego ingresar a la interfaz de usuario de Kafka: http://localhost:8080/
+
+    Luego para ver los datos de elastic search: http://localhost:5601/
+
 4. Asegurarse de tener restaurado la base de datos `BD_NET_BACKEND` en SQL Server. Lo puede descargar desde el siguiente enlace https://softlineholdingplc-my.sharepoint.com/:f:/g/personal/isaias_mayon_noventiq_com/Em4icnU5F-9Iq2plktzTvMkBGTi7iLu7_zmaDuYPhtpGbA?e=oRAF8Q 
 
 5. Crear el tópico `sqlserver_products` desde `Kafka UI` desde el contenedor de kafka
@@ -129,4 +133,53 @@
             "key.converter.schemas.enable": true
         }
     }'
+    ```
+
+8. Orden de carga de variables en .NET en el uso de contenedores
+
+    1. appsetting.json
+    2. appsettings..json
+    3. secret.json
+    4. environment variables
+    5. cli args
+
+    <br />
+    Ejemplo de uso del archivo  `appSettings.json`
+
+    ```json
+    {
+        "Logging": {
+            "LogLevel": {
+            "Default": "Information",
+            "Microsoft.AspNetCore": "Warning"
+            }
+        },
+        "AllowedHosts": "*",
+        "SqlServerSettings": {
+            "ConnectionString": "Server=.;Database=BD_NET_BACKEND;User Id=sa;Password=PasswordO1.;"
+        },
+        "MongoDatabaseSettings": {
+            "ConnectionString": "mongodb://root:rootpassword@localhost:27017/admin"
+        }
+    }
+    ```
+
+    Declaración de parámetros en Dockerfile
+
+    ```Docker
+    ENV Logging__LogLevel__Default=Trace
+
+    ENV SqlServerSettings__ConnectionString=Server=.;Database=BD_NET_BACKEND;User Id=sa;Password=PasswordO1.;
+
+    ENV MongoDatabaseSettings__ConnectionString=mongodb://root:rootpassword@localhost:27017/admin;
+    ```
+
+    Construcción de imagen
+    ```Docker
+    docker build -t user_microservice:1.0 . 
+    ```
+
+    Creación de contenedor basado en imagen
+    ```Docker
+    docker run -d --name xxxxx1 -e "SqlServerSettings__ConnectionString=Server=rogwin11;Database=BD_NET_BACKEND;User Id=sa;Password=PasswordO1." -e "MongoDatabaseSettings__ConnectionString=mongodb://root:rootpassword@rogwin11:27017/admin" -p 5000:80 user_microservice:1.0
     ```
