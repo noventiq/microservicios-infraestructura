@@ -183,3 +183,53 @@
     ```Docker
     docker run -d --name xxxxx1 -e "SqlServerSettings__ConnectionString=Server=rogwin11;Database=BD_NET_BACKEND;User Id=sa;Password=PasswordO1." -e "MongoDatabaseSettings__ConnectionString=mongodb://root:rootpassword@rogwin11:27017/admin" -p 5000:80 user_microservice:1.0
     ```
+
+9. Konfiguración de infraestructura en Kubernetes
+
+    9.1 Iniciar minikube o kubernetes en docker desktop
+    ```
+    minikube delete
+    minikube start
+    minikube addons enable ingress
+    minikube ip
+    ```
+
+    9.2 Aplicar cambios declarados en archivos yml
+    ```
+    kubectl apply -f apple.yaml
+    kubectl apply -f banana.yaml
+    kubectl create -f ingress.yaml
+    ```
+
+9.2 Algunos comando útiles de kubectl para gestionar la infraestructura en Kubernetes
+    ```
+    kubectl get nodes
+    kubectl get pods
+    kubectl exec -it nginx -- sh
+    kubectl delete pod nginx
+    kubectl get pods
+
+    kubectl get ingress
+    kubectl get services
+    kubectl get pods
+
+    kubectl describe services banana-service
+
+    kubectl logs -n ingress-nginx -l app.kubernetes.io/name=ingress-nginx
+    kubectl get endpointslices -l kubernetes.io/service-name=apple-service
+    kubectl exec apple-app-7dbdf784c9-6rc7r -- printenv | grep SERVICE
+    kubectl scale deployment apple-app --replicas=0; 
+    kubectl scale deployment apple-app --replicas=2;
+
+    kubectl get all -n default
+    kubectl get endpoints -n default
+
+    kubectl get pods,deployments,svc,ingress -n ingress-nginx
+
+    kubectl port-forward --address 0.0.0.0 deployment/ingress-nginx-controller 8443:80 --namespace ingress-nginx
+
+    Ingress, LoadBalancer, and NodePort
+
+    kubectl run mycurlpod --image=curlimages/curl -i --tty -- sh
+    kubectl exec -i --tty mycurlpod -- sh
+    ```

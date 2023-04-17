@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: users-microservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: users-microservice
+  template:
+    metadata:
+      labels:
+        app: users-microservice
+    spec:
+      containers:
+        - name: users-microservice
+          image: isaiasmh/user_microservice
+          # args:
+          #   - "-text=banana"
+          # resources:
+          #   requests:
+          #     memory: "10Mi"
+          #   limits:
+          #     memory: "20Mi"
+          ports:
+            - containerPort: 80
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: users-service
+  labels:
+    app: users-microservice
+spec:
+  type: ClusterIP
+  selector:
+    app: users-microservice
+  ports:
+    - protocol: TCP
+      port: 80 # Default port for image
+      targetPort: 80

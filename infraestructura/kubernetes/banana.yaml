@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: banana-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: banana-app
+  template:
+    metadata:
+      labels:
+        app: banana-app
+    spec:
+      containers:
+        - name: banana-app
+          image: hashicorp/http-echo
+          args:
+            - "-text=banana"
+          resources:
+            requests:
+              memory: "10Mi"
+            limits:
+              memory: "20Mi"
+          ports:
+            - containerPort: 5678
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: banana-service
+  labels:
+    app: banana-app
+spec:
+  type: ClusterIP
+  selector:
+    app: banana-app
+  ports:
+    - protocol: TCP
+      port: 8080 # Default port for image
+      targetPort: 5678
